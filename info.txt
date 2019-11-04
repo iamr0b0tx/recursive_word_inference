@@ -1,0 +1,4 @@
+use page rank to get rank of words in word-co-occurence
+    (A^n) * R0 = R where n-> infinity
+
+cluster R

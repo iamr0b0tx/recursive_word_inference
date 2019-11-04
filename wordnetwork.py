@@ -12,19 +12,20 @@ from nltk.corpus import stopwords
 from sklearn.cluster import KMeans
 
 # from lib code
-from vocabulary import Vocabulary
-from functions import console_log
+from functions import console_log, pagerank
 
 # stopwords
 cachedStopWords = stopwords.words("english")
 
 class WordNetwork:
 	def __init__(self):
-		# processing chunks
-		self.batch_size = 1000
+		pass
 
 	def classifyDoc(self, doc_text):
-		doc_word_distr = pd.DataFrame(
+		# use latest model of term ratio and freq
+		term_term_ratio = self.ttr
+
+		topic_word_distr = pd.DataFrame(
 			data=0.0, 
 			columns=self.topic_word_distr.columns,
 			index=self.topic_word_distr.index
@@ -34,15 +35,24 @@ class WordNetwork:
 		words_in_doc = []
 
 		for word in tokens:
-			if word in self.topic_word_distr.index:
-				words_in_doc.append(word)
+			if word not in self.topic_word_distr.index:
+				continue
+			
+			# save word in doc
+			words_in_doc.append(word)
 
-				for topic_index in self.topic_word_distr.columns:	
-					doc_word_distr[topic_index] += self.term_term_ratio[word]
-				
+			for topic_index in topic_word_distr.columns:
+				topic_word_distr[topic_index] += term_term_ratio[word] * self.topic_word_distr[topic_index]
 
-		doc_word_distr = doc_word_distr.apply(self.trustFactor)
-		topics = doc_word_distr.mean(axis=0)
+		# create topic word distribution
+		topic_word_distr = self.trustFactor(topic_word_distr)
+		twd = topic_word_distr * 0  # temp topic word distribution matrix
+
+		# make words unique
+		words_in_doc = list(set(words_in_doc))
+
+		# the topic relation results
+		topics = topic_word_distr.mean(axis=0)
 
 		# console_log('{}{} Document (word_freq) distribution! {}{}'.format(' '*25, '='*25, '='*25, ' '*25))
 		# console_log(doc_word_distr, end='\n\n')
@@ -50,10 +60,12 @@ class WordNetwork:
 		# console_log('{}{} Documnet Topic (probability) distribution! {}{}'.format(' '*25, '='*25, '='*25, ' '*25))
 		# console_log(topics, end='\n\n')
 
-		self.topic_word_distr.to_csv('twd.csv')
-		doc_word_distr.to_csv('dwd.csv')
+		# self.topic_word_distr.to_csv('twd.csv')
+		# doc_word_distr.to_csv('dwd.csv')
 
-		return topics, list(set(words_in_doc))
+		# self.getTopWords(topic_word_distr)
+
+		return topics, words_in_doc
 
 	def get_clusters(self, values):
 		d = diff = np.diff(values)
@@ -169,8 +181,8 @@ class WordNetwork:
 		console_log('-'*50, 'Building Word Occurrence and Co-occurrence!', '-'*50)
 		for token1 in tqdm(word_docs):
 			wd1 = word_docs[token1]
-
 			if token1 not in term_term_freq:
+
 				term_term_freq[token1] = {}
 				term_term_ratio[token1] = {}
 
@@ -201,11 +213,14 @@ class WordNetwork:
 		console_log(self.term_term_ratio, '\n')
 		# model.to_csv('a.csv')
 
-	def getTopWords(self):
+	def getTopWords(self, xwd=None):
+		if xwd is None:
+			xwd = self.topic_word_distr
+
 		# geting the top words influencing topic
-		for t in self.topic_word_distr.columns:
+		for t in xwd.columns:
 			console_log('{}\n{}'.format(t, '='*10))
-			console_log(self.topic_word_distr[t].sort_values(ascending=False)[:10], end='\n\n')
+			console_log(xwd[t].sort_values(ascending=False)[:10], end='\n\n')
 		return
 
 	def run_iteration(self):
@@ -245,7 +260,7 @@ class WordNetwork:
 				ttr[w1] += term_term_ratio[w1][w2] * term_term_ratio[w2]
 		
 		# normalize
-		term_term_ratio = ttr / len(indices) if len(indices) > 0 else 0
+		term_term_ratio = ttr * len(indices)**-1 if len(indices) > 0 else ttr * 0
 
 		console_log(term_term_ratio, '\n')
 		# input('enter to continue!')
@@ -265,7 +280,7 @@ class WordNetwork:
 				twd[topic_index] += twdd * term_term_ratio[word]
 
 		# update the term doc freq
-		topic_word_distr = twd / len(indices) if len(indices) > 0 else 0
+		topic_word_distr = twd * len(indices)**-1 if len(indices) > 0 else 0 * twd
 
 		# clusters found
 		topics = self.getClusters(topic_word_distr)
@@ -276,6 +291,8 @@ class WordNetwork:
 
 		# update the topic distr
 		self.topic_word_distr = pd.DataFrame(new_topic_word_distr)
+		self.ttf = term_term_freq
+		self.ttr = term_term_ratio
 
 		# console_log new model for iteration
 		console_log(self.topic_word_distr, '\n')

@@ -79,7 +79,8 @@ def main():
 		ntd.append(list(topics))
 		docs.append(words_in_doc)
 
-		top_topics = topics.sort_values(ascending=False)[:3].index
+		top_topics = topics.sort_values(ascending=False)[:3]
+		top_topics = (top_topics.index, top_topics.values)
 		
 		# show
 		print('doc {}: topic = {}, class = {}'.format(doc_i, top_topics, classes[test_docs_target[doc_i]]))

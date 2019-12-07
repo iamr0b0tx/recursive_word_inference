@@ -1,0 +1,49 @@
+# the occurrence of words
+abundance = sum of ossurence of words in corpus
+
+# the mean abundance
+mean_abundance = abundance.mean()
+
+# the abundant words (upper bound words)
+upper_percentile = abundance[abundance >= mean_abundance]
+upper_percentile = upper_percentile[upper_percentile <= upper_percentile.mean()]
+
+# the abundant words indices
+indices = upper_percentile.index
+
+# reinitialize to use the most abundant words (they decide on topics)
+term_term_freq = term_term_freq[indices]
+term_term_ratio = term_term_ratio[indices]
+
+#reinforce the term_term_ratio with term_term_freq (more data more trust)
+trustFactor = lambda x: 1 / (x+1)
+term_term_ratio = trustFactor(term_term_freq) * term_term_ratio
+ttr = zeros(term_term_ratio.size) #temp term term ratio 
+
+# infer word for word
+for w1 in term_term_ratio.columns:
+    for w2 in term_term_ratio:
+        ttr[w1] += term_term_ratio[w1][w2] * term_term_ratio[w2]
+
+term_term_ratio = ttr.mean(1)
+
+# create topic word distribution
+topic_word_distr = trustFactor(self.doc_term_freq[indices])
+twd = zeros(topic_word_distr) #temp topic word distribution matrix
+
+for topic_index in topic_word_distr.columns:
+    # topic word words
+    twdd = topic_word_distr[topic_index]
+
+    # inference based on word co-occurrence
+    for word in indices:
+        twd[topic_index] += twdd[word] * term_term_ratio[word]
+
+topic_word_distr = twd.mean(1)
+
+# clusters found
+topics = self.getClusters(topic_word_distr)
+
+new_topic_word_distr = {}
+for topic_index, doc_indices in enumerate(topics):
+    new_topic_word_distr[topic_index] = topic_word_distr[doc_indices].mean(1)

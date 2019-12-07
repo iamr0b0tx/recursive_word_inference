@@ -1,5 +1,6 @@
 # from std lib
-import os, re
+import os, re, sys
+from math import log as logarithm
 
 # from third party lib
 import pandas as pd
@@ -14,48 +15,11 @@ else:
 	def console_log(*args):
 		pass
 
-"""Pagerank algorithm with explicit number of iterations.
+def log(num, base=10):
+	if num > 0:
+		return logarithm(num, base)
 
-Returns
--------
-ranking of nodes (pages) in the adjacency matrix
-
-"""
-
-
-def pagerank(M, number_of_iterations=100, d=0.85):
-	"""pagerank: The trillion dollar algorithm.
-
-	Parameters
-	----------
-	M : numpy array
-		adjacency matrix where M_i,j represents the link from 'j' to 'i', such that for all 'j'
-		sum(i, M_i,j) = 1]
-	num_iterations : int, optional
-		number of iterations, by default 100
-	d : float, optional
-		damping factor, by default 0.85
-
-	Returns
-	-------
-	numpy array
-		a vector of ranks such that v_i is the i-th rank from [0, 1],
-		v sums to 1
-
-	"""
-	N = M.shape[1]
-	v = np.ones((N, 1)) / N
-
-	v_last = 0
-	# while np.all(abs(v_last - v) > 10e-5):
-	for _ in range(number_of_iterations):
-		if np.all(abs(v_last - v) <= 10e-500):
-			break
-
-		v_last = v.copy()
-		v = d * np.matmul(M.values, v) + (1 - d) / N
-
-	return v
+	return logarithm(sys.float_info.min * sys.float_info.epsilon, base)
 
 def read_txt(filename):
 	with open(filename) as f:
@@ -116,6 +80,8 @@ def perplexity(docs, nwt, ntd):
 	n , ll = 0, 0.0
 	for d, doc in enumerate(docs):
 		for word in doc:
-			ll += np.log(((nwt[word]/nt) * (ntd[:, d]/nd[d])).sum())
+			a = (nwt[word] / nt) if nt > 0 else 0 * nwt[word]
+			b = (ntd[:, d] / nd[d]) if nd[d] > 0 else ntd[:, d] * 0
+			ll += log((a * b).sum())
 			n += 1
-	return np.exp(ll/(-n))
+	return np.exp(ll/(-n) if n > 0 else 0)

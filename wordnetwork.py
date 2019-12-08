@@ -1,7 +1,6 @@
 # import fron the python stdlib
 import re
 import os
-from math import log
 
 # import from third party lib
 import pandas as pd  # data processing, CSV file I/O (e.g. pd.read_csv)
@@ -14,7 +13,7 @@ from nltk.corpus import stopwords
 from sklearn.cluster import KMeans
 
 # from lib code
-from functions import console_log
+from utility import console_log, log
 
 # stopwords
 cachedStopWords = stopwords.words("english")
@@ -42,7 +41,10 @@ class WordNetwork:
 			words_in_doc.append(word)
 
 			# use latest model of term ratio to develop doc word relation model
-			doc_word_distr += self.ttr[word]
+			doc_word_distr += self.term_term_ratio[word]
+
+		# make words unique
+		words_in_doc = list(set(words_in_doc))
 
 		# create topic word distribution
 		N = len(words_in_doc)
@@ -56,21 +58,21 @@ class WordNetwork:
 			index=self.topic_word_distr.columns
 		)[0]
 
+		# the relation between word and topic
+		word_topic_distr = self.topic_word_distr.T
+
 		# doc topic word distr
 		for word in words_in_doc:
-			topic_distr += doc_word_distr[word] * self.topic_word_distr.T[word]
+			topic_distr += doc_word_distr[word] * word_topic_distr[word]
 			# print(topic_distr)
 			# print(doc_word_distr[word])
 			# print(self.topic_word_distr.T[word])
 			# print()
 
 		# the final result of relations
-		N = len(self.topic_word_distr.columns)
+		N = len(words_in_doc)
 		topic_distr = topic_distr / N if N > 0 else topic_distr * 0
 		# topic_distr = topic_distr[0]
-
-		# make words unique
-		words_in_doc = list(set(words_in_doc))
 
 		# console_log('{}{} Documnet Topic (probability) distribution! {}{}'.format(' '*25, '='*25, '='*25, ' '*25))
 		# console_log(topic_distr, end='\n\n')
@@ -78,7 +80,7 @@ class WordNetwork:
 		# self.topic_word_distr.to_csv('twd.csv')
 		# doc_word_distr.to_csv('dwd.csv')
 
-		# self.getTopWords(topic_word_distr)
+		# self.getTopWords(topic_word_distr=topic_word_distr)
 
 		return topic_distr, words_in_doc
 
@@ -171,9 +173,10 @@ class WordNetwork:
 
 			return
 
-	def constructDTF(self, docs):
+	def constructDTF(self, docs, labels):
 		# construct the model
 		doc_term_freq = {}
+		doc_topic = {}
 		term_term_freq = {}
 		term_term_ratio = {}
 
@@ -186,8 +189,10 @@ class WordNetwork:
 		for doc_index in tqdm(range(len(docs))):
 			if doc_index not in doc_term_freq:
 				doc_term_freq[doc_index] = {}
+				doc_topic[doc_index] = {}
 
 			text = docs[doc_index]
+			doc_topic[doc_index][labels[doc_index]] = 1
 
 			# get word tokens
 			tokens = self.tokenize(text)
@@ -222,25 +227,27 @@ class WordNetwork:
 					len(wd1) if len(wd1) > 0 else 0
 
 		# make a dataframe
+		self.doc_topic = pd.DataFrame(doc_topic)
 		self.doc_term_freq = pd.DataFrame(doc_term_freq)
 
 		# term term matrix
-		self.term_term_freq = pd.DataFrame(term_term_freq)
-		self.term_term_ratio = pd.DataFrame(term_term_ratio)
+		term_term_freq = pd.DataFrame(term_term_freq)
+		term_term_ratio = pd.DataFrame(term_term_ratio)
 
 		# set word_docs as field
 		self.word_docs = word_docs.copy()
 
 		# replace nan as 0
+		self.doc_topic.fillna(0, inplace=True)
 		self.doc_term_freq.fillna(0, inplace=True)
-		self.term_term_freq.fillna(0, inplace=True)
-		self.term_term_ratio.fillna(0, inplace=True)
+		term_term_freq.fillna(0, inplace=True)
+		term_term_ratio.fillna(0, inplace=True)
+
+		# adjust term ratio with trust factor
+		self.term_term_ratio = self.trustFactor(term_term_freq) * term_term_ratio
 
 		console_log()
-		console_log(self.doc_term_freq, '\n')
-		console_log(self.term_term_freq, '\n')
-		console_log(self.term_term_ratio, '\n')
-		# model.to_csv('a.csv')
+		console_log(self.doc_topic, '\n')
 
 	def getCoherence(self, topwords=None):
 		# get the topwords
@@ -256,10 +263,8 @@ class WordNetwork:
 
 		for topic_topwords in topwords:
 			# get all npmi in topic
-			topic_npmis = [self.npmi(w1, w2)
-                            for w1 in topic_topwords for w2 in topic_topwords]
-			topic_coherence = sum(topic_npmis) / \
-                            len(topic_npmis) if len(topic_npmis) > 0 else 0
+			topic_npmis = [self.npmi(w1, w2) for w1 in topic_topwords for w2 in topic_topwords]
+			topic_coherence = sum(topic_npmis) / len(topic_npmis) if len(topic_npmis) > 0 else 0
 
 			# gather all coherence
 			all_coherences.append(topic_coherence)
@@ -286,114 +291,144 @@ class WordNetwork:
 		return topwords
 
 	def npmi(self, word1, word2):
-		pmi = log(self.ttr[word1][word2] /
-		          (self.ttr[word1].sum() * self.ttr[word2].sum()))
-		return pmi / -(log(self.ttr[word1][word2]))
+		pmi = log(self.term_term_ratio[word1][word2] / (self.term_term_ratio[word1].sum() * self.term_term_ratio[word2].sum()))
+		denom = log(self.term_term_ratio[word1][word2])
+		return pmi / -(denom) if denom > 0 else 0
 
 	def run_iteration(self, n_of_iterations=1):
-		# the occurrence of words
-		occurrence = (self.term_term_freq > 0).astype(np.int64)
+		term_doc_freq = self.doc_term_freq.T
+		term_topic = pd.DataFrame(data=0, columns=term_doc_freq.columns, index=self.doc_topic.index)
 
-		# the abundance
-		abundance = occurrence.sum(0)
+		console_log('\n', '-'*50, 'Constructing Topic word distribution!', '-'*50)
 
-		# the mean abundance
-		mean_abundance = abundance.mean()
+		for word in tqdm(term_doc_freq.columns):
+			tdf = term_doc_freq[word] #word term_doc_freq
 
-		# the abundant words
-		upper_percentile = abundance[abundance > mean_abundance]
-		lower_percentile = abundance[abundance < mean_abundance]
-		informative = upper_percentile[(lower_percentile.mean() <= abundance) & (
-			abundance <= upper_percentile.mean())]
+			doc_indices = tdf[tdf > 0].index
+			term_topic[word] += self.doc_topic[doc_indices].sum(1)
 
-		# the abundant words indices
-		indices = informative.index
+		# leave a line
+		console_log()
 
-		# duplicate term freq and ratio
-		term_term_freq = self.term_term_freq.copy()
-		term_term_ratio = self.term_term_ratio.copy()
+		# the general topic word matrix
+		word_topic_matrix = term_topic.copy()
 
-		# the most abundant words (they decide on topics)
-		# term_term_freq = term_term_freq[indices].T[indices].T
-		# term_term_ratio = term_term_ratio[indices].T[indices].T
+		console_log('\n', '-'*50, 'Checking for informative words!', '-'*50)
 
-		# adjust term ratio with trust factor
-		term_term_ratio = self.trustFactor(term_term_freq) * term_term_ratio
+		# non informative columns
+		columns_to_drop = []
 
-		# to track the number of iteration
-		counter = 0
+		# check for informative words
+		for term in tqdm(term_topic.columns):
+			# normalize the term to topic
+			word_topic_matrix[term] /= word_topic_matrix[term].sum()
 
-		itr = tuple()
-		last_itr = None
+			# select the ones with diluted topics to drop
+			# if not (term_topic[term] == term_topic[term].sum()).any():
+			# if not (term_topic[term] > term_topic[term].mean()).any():
+			if not (term_topic[term] > term_topic[term].mean() + term_topic[term].min()).any():
+				columns_to_drop.append(term)
+		
+		# flip the word topic to get topic word
+		self.topic_word_distr = word_topic_matrix.T
 
-		while last_itr != itr:
-			last_itr = itr
+		# display the topic-word distr
+		console_log(self.topic_word_distr.T)
 
-			# the new term ratio to be infered
-			ttr = term_term_ratio * 0  # temp term term ratio matrix
+		# leave a line
+		console_log()
 
-			# update the iteration count
-			counter += 1
+		# drop non informative columns
+		term_topic = term_topic.drop(columns=columns_to_drop)
 
-			# display the current runing process
-			console_log(
-				'\n', '-'*50, 'Infering word-word ratio! iteration {}'.format(counter), '-'*50)
+		# trim down the informative words
+		best_words_indices = []
+		topic_term = term_topic.T
+		
+		console_log('\n', '-'*50, 'Trimming for informative words!', '-'*50)
 
+		for topic in tqdm(term_topic.index):
+			topic_terms = topic_term[topic]
+			topic_terms_mean = np.unique(topic_terms.values).mean()
+
+			best_words_indices.extend(
+				list(
+					topic_terms[topic_terms > topic_terms_mean].index
+				)
+			)
+
+		# leave a line
+		console_log()
+
+		# the unique index of the best words
+		best_words_indices = list(set(best_words_indices))
+		
+		# display topwords for topi word distr
+		# self.getTopWords(topic_word_distr=self.topic_word_distr.T[best_words_indices].T)
+
+		# the new term term ratio to be infered from best of best
+		ttr = self.term_term_ratio[best_words_indices] * 0  # temp term term ratio matrix
+
+		# display the current runing process
+		console_log('\n', '-'*50, 'Infering best_word-word ratio!', '-'*50)
+		
+		if 1:
 			# infer word for word
-			for w1 in tqdm(indices):
-				for w2 in term_term_ratio.index:
-					ttr[w2] += term_term_ratio[w1][w2] * term_term_ratio[w2]
+			for w1 in tqdm(best_words_indices):
+				for w2 in best_words_indices:
+					factor = 1
+
+					# inference from sharing occurence with informative word
+					co_occurence_inference_factor = self.term_term_ratio[w1][w2]
+					# if co_occurence_inference_factor > 0:
+					# 	factor *= co_occurence_inference_factor
+
+					# inference from sharing topic with best word
+					co_topic_inference_factor = (self.topic_word_distr.T[w1] * self.topic_word_distr.T[w2]).mean()
+					if co_topic_inference_factor > 0:
+						factor *= co_topic_inference_factor
+
+					# infer relation of words
+					ttr[w2] += factor * self.term_term_ratio[w1]
 
 			# normalize
-			term_term_ratio = ttr / len(indices) if len(indices) > 0 else ttr * 0
-			term_term_ratio /= term_term_ratio.max().max()
+			self.term_term_ratio[best_words_indices] = ttr / len(best_words_indices) if len(best_words_indices) > 0 else ttr * 0
+		
+		# the new term ratio to be infered from best
+		ttr = self.term_term_ratio * 0  # temp term term ratio matrix
 
-			# console_log(term_term_ratio, '\n')
-			# input('enter to continue!')
+		# display the current runing process
+		console_log('\n', '-'*50, 'Infering word-word ratio!', '-'*50)
 
-			# create topic word distribution
-			# topic_word_distr = self.doc_term_freq.T[indices].T.apply(self.trustFactor)
-			topic_word_distr = self.doc_term_freq.apply(self.trustFactor)
-			indices = topic_word_distr.index
-			twd = topic_word_distr * 0  # temp topic word distribution matrix
+		# infer word for word
+		for w1 in tqdm(best_words_indices):
+			for w2 in self.term_term_ratio.index:
+				factor = 1
 
-			console_log(
-				'\n', '-'*50, 'Building Topic word distribution! iteration {}'.format(counter), '-'*50)
+				# inference from sharing occurence with informative word
+				co_occurence_inference_factor = self.term_term_ratio[w1][w2]
+				# if co_occurence_inference_factor > 0:
+				# 	factor *= co_occurence_inference_factor
 
-			for topic_index in tqdm(topic_word_distr.columns):
-				# inference based on word co-occurrence
-				for word in indices:
-					twd[topic_index] += topic_word_distr[topic_index][word] * term_term_ratio[word]
+				# inference from sharing topic with best word
+				co_topic_inference_factor = (self.topic_word_distr.T[w1] * self.topic_word_distr.T[w2]).mean()
+				if co_topic_inference_factor > 0:
+					factor *= co_topic_inference_factor
 
-			# update the term doc freq
-			topic_word_distr = twd / len(indices) if len(indices) > 0 else 0 * twd
-			topic_word_distr /= topic_word_distr.max().max()
+				# infer relation of words
+				ttr[w2] += factor * self.term_term_ratio[w1]
 
-			# clusters found
-			topics = self.getClusters(topic_word_distr)
+		# normalize
+		self.term_term_ratio = ttr / len(best_words_indices) if len(best_words_indices) > 0 else ttr * 0
 
-			itr = tuple(sorted(topics))
+		# console_log(term_term_ratio, '\n')
+		# input('enter to continue!')
 
-			if counter == n_of_iterations:
-				break
-
-		# the number of iterations done on inference
-		console_log('{} iterations done!\n'.format(counter))
-
-		new_topic_word_distr = {}
-		for topic_index, doc_indices in enumerate(topics):
-			new_topic_word_distr[topic_index] = topic_word_distr[doc_indices].mean(1)
-
-		# update the topic distr
-		self.topic_word_distr = pd.DataFrame(new_topic_word_distr)
-		self.ttf = term_term_freq
-		self.ttr = term_term_ratio
-
-		# console_log new model for iteration
-		# console_log(self.topic_word_distr, '\n')
+		# the most informative words
+		self.best_words_indices = best_words_indices.copy()
 		return
 
-	def train(self, docs, n=1.0):
+	def train(self, docs, labels, n=1.0):
 		# the documents that word appears in
 		docs_length = len(docs)
 
@@ -404,7 +439,7 @@ class WordNetwork:
 		console_log('-'*50, 'Preprocessing!', '-'*50, '\n')
 
 		# constructs a model
-		self.constructDTF(docs)
+		self.constructDTF(docs, labels)
 
 		# ----------------------------------------training----------------------------------------
 		console_log('='*60, 'Training!', '='*60, '\n')

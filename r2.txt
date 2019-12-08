@@ -1,0 +1,240 @@
+-------------------------------------------------- Preprocessing! -------------------------------------------------- 
+
+-------------------------------------------------- Building Document Term Matrix! --------------------------------------------------
+
+-------------------------------------------------- Building Word Occurrence and Co-occurrence! --------------------------------------------------
+
+    0    1    2    3    4    5    6   ...   93   94   95   96   97   98   99
+0  0.0  0.0  0.0  0.0  1.0  0.0  0.0  ...  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+1  0.0  1.0  0.0  1.0  0.0  1.0  1.0  ...  0.0  0.0  1.0  1.0  0.0  0.0  0.0
+2  0.0  0.0  0.0  0.0  0.0  0.0  0.0  ...  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+3  1.0  0.0  0.0  0.0  0.0  0.0  0.0  ...  0.0  1.0  0.0  0.0  0.0  1.0  0.0
+4  0.0  0.0  1.0  0.0  0.0  0.0  0.0  ...  0.0  0.0  0.0  0.0  1.0  0.0  0.0
+5  0.0  0.0  0.0  0.0  0.0  0.0  0.0  ...  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+6  0.0  0.0  0.0  0.0  0.0  0.0  0.0  ...  1.0  0.0  0.0  0.0  0.0  0.0  1.0
+
+[7 rows x 100 columns] 
+
+============================================================ Training! ============================================================ 
+
+
+ -------------------------------------------------- Constructing Topic word distribution! --------------------------------------------------
+
+
+ -------------------------------------------------- Checking for informative words! --------------------------------------------------
+   a.m.  a0-size  aamir  abandon  ...  zeh  zirconium  zone  zoomed
+0   0.0      0.0    0.0      0.0  ...  0.0        0.0   0.0     0.0
+1   0.0      1.0    0.0      1.0  ...  1.0        0.0   0.0     0.0
+2   0.0      0.0    0.0      0.0  ...  0.0        0.0   0.0     0.0
+3   0.0      0.0    1.0      0.0  ...  0.0        0.0   0.0     1.0
+4   0.0      0.0    0.0      0.0  ...  0.0        1.0   0.0     0.0
+5   0.0      0.0    0.0      0.0  ...  0.0        0.0   0.0     0.0
+6   1.0      0.0    0.0      0.0  ...  0.0        0.0   1.0     0.0
+
+[7 rows x 5187 columns]
+
+
+ -------------------------------------------------- Trimming for informative words! --------------------------------------------------
+
+
+ -------------------------------------------------- Infering best_word-word ratio! --------------------------------------------------
+
+ -------------------------------------------------- Infering word-word ratio! --------------------------------------------------
+                         ========================= Topic (word) distribution! =========================                         
+   a.m.  a0-size  aamir  abandon  ...  zeh  zirconium  zone  zoomed
+0   0.0      0.0    0.0      0.0  ...  0.0        0.0   0.0     0.0
+1   0.0      1.0    0.0      1.0  ...  1.0        0.0   0.0     0.0
+2   0.0      0.0    0.0      0.0  ...  0.0        0.0   0.0     0.0
+3   0.0      0.0    1.0      0.0  ...  0.0        0.0   0.0     1.0
+4   0.0      0.0    0.0      0.0  ...  0.0        1.0   0.0     0.0
+5   0.0      0.0    0.0      0.0  ...  0.0        0.0   0.0     0.0
+6   1.0      0.0    0.0      0.0  ...  0.0        0.0   1.0     0.0
+
+[7 rows x 5187 columns]
+
+Topic 0
+==========
+excluding     1.0
+conspiracy    1.0
+explicit      1.0
+doubtful      1.0
+logic         1.0
+consistent    1.0
+fullfilled    1.0
+agrees        1.0
+guitar        1.0
+ohio          1.0
+Name: 0, dtype: float64
+
+Topic 1
+==========
+q30tbxn+b^wm          1.0
+mbxn+bxn+bxn+bxn+-    1.0
+clarkec               1.0
+clarke                1.0
+mas                   1.0
+font                  1.0
+seq                   1.0
+marketing             1.0
+citing                1.0
+servis                1.0
+Name: 1, dtype: float64
+
+Topic 2
+==========
+analyzer      1.0
+hotel         1.0
+airports      1.0
+condition     1.0
+netters       1.0
+pink          1.0
+conponents    1.0
+todd          1.0
+las           1.0
+hmmm          1.0
+Name: 2, dtype: float64
+
+Topic 3
+==========
+zoomed      1.0
+lojack      1.0
+alot        1.0
+locks       1.0
+wfan        1.0
+wetting     1.0
+fashion     1.0
+guzman      1.0
+haggling    1.0
+iskander    1.0
+Name: 3, dtype: float64
+
+Topic 4
+==========
+ciphertext    1.0
+cylinders     1.0
+pushing       1.0
+pusher        1.0
+lab           1.0
+l.a.          1.0
+purtill       1.0
+purposes      1.0
+daily         1.0
+gaas          1.0
+Name: 4, dtype: float64
+
+Topic 5
+==========
+grace         1.0
+fedex         1.0
+graciously    1.0
+modern-day    1.0
+sickness      1.0
+std           1.0
+burnet        1.0
+developed     1.0
+skin          1.0
+pennance      1.0
+Name: 5, dtype: float64
+
+Topic 6
+==========
+logjam       1.0
+laid         1.0
+laughable    1.0
+latin        1.0
+latent       1.0
+lately       1.0
+larger       1.0
+landed       1.0
+land         1.0
+ktvb         1.0
+Name: 6, dtype: float64
+
+100 doc(s) read and 5187 word(s) in the vocabulary
+Topics found via LDA:
+===========================
+Topic #0: ax max pl 1d9 b8f wm 3t g9v 0t bxn
+Topic #1: order reuss does crowley sex way words quite example think
+Topic #2: people xxxx ve think just work country time 10 things
+Topic #3: don like know use people want think time space just
+Topic #4: know scsi transfer thanks info didn idea like plate device
+Topic #5: proceedings computer des cryptography encryption pub key security cryptology 1988
+Topic #6: war south secret rockefeller nuclear new military island georgia naval
+
+Classification
+=====================================
+doc 0: topic = [talk  = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 2], class = rec: rec.sport.hockey
+doc 1: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 3], class = talk: talk.politics.guns
+doc 2: topic = [sci   = 0.0000, talk  = 0.0000, alt   = 0.0000, lda = 3], class = sci: sci.space
+doc 3: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 2], class = talk: talk.politics.misc
+doc 4: topic = [talk  = 0.0000, soc   = 0.0000, sci   = 0.0000, lda = 3], class = comp: comp.windows.x
+doc 5: topic = [talk  = 0.0000, sci   = 0.0000, alt   = 0.0000, lda = 3], class = rec: rec.autos
+doc 6: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 5], class = comp: comp.os.ms-windows.misc
+doc 7: topic = [talk  = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 2], class = rec: rec.autos
+doc 8: topic = [talk  = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 2], class = comp: comp.graphics
+doc 9: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 6], class = comp: comp.graphics
+doc 10: topic = [talk  = 0.0001, comp  = 0.0001, sci   = 0.0000, lda = 5], class = comp: comp.graphics
+doc 11: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 5], class = comp: comp.graphics
+doc 12: topic = [talk  = 0.0000, sci   = 0.0000, soc   = 0.0000, lda = 3], class = sci: sci.med
+doc 13: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 3], class = soc: soc.religion.christian
+doc 14: topic = [talk  = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 2], class = comp: comp.sys.ibm.pc.hardware
+doc 15: topic = [comp  = 0.0000, talk  = 0.0000, sci   = 0.0000, lda = 1], class = sci: sci.space
+doc 16: topic = [talk  = 0.0000, soc   = 0.0000, sci   = 0.0000, lda = 6], class = comp: comp.sys.mac.hardware
+doc 17: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 6], class = rec: rec.sport.hockey
+doc 18: topic = [talk  = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 3], class = soc: soc.religion.christian
+doc 19: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 2], class = comp: comp.os.ms-windows.misc
+doc 20: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 5], class = rec: rec.sport.hockey
+doc 21: topic = [talk  = 0.0000, soc   = 0.0000, sci   = 0.0000, lda = 6], class = soc: soc.religion.christian
+doc 22: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 3], class = comp: comp.windows.x
+doc 23: topic = [talk  = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 3], class = sci: sci.med
+doc 24: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 6], class = talk: talk.politics.misc
+doc 25: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 6], class = soc: soc.religion.christian
+doc 26: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 6], class = rec: rec.sport.baseball
+doc 27: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 2], class = alt: alt.atheism
+doc 28: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 6], class = sci: sci.med
+doc 29: topic = [talk  = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 2], class = rec: rec.motorcycles
+doc 30: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 5], class = talk: talk.religion.misc
+doc 31: topic = [sci   = 0.0000, comp  = 0.0000, talk  = 0.0000, lda = 2], class = comp: comp.sys.ibm.pc.hardware
+doc 32: topic = [comp  = 0.0000, talk  = 0.0000, sci   = 0.0000, lda = 3], class = comp: comp.graphics
+doc 33: topic = [talk  = 0.0000, soc   = 0.0000, sci   = 0.0000, lda = 6], class = talk: talk.politics.misc
+doc 34: topic = [talk  = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 3], class = talk: talk.politics.mideast
+doc 35: topic = [talk  = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 6], class = talk: talk.politics.misc
+doc 36: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 3], class = rec: rec.sport.baseball
+doc 37: topic = [sci   = 0.0000, talk  = 0.0000, comp  = 0.0000, lda = 2], class = comp: comp.sys.mac.hardware
+doc 38: topic = [talk  = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 4], class = comp: comp.sys.ibm.pc.hardware
+doc 39: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 3], class = rec: rec.sport.baseball
+doc 40: topic = [talk  = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 2], class = rec: rec.sport.baseball
+doc 41: topic = [comp  = 0.0000, talk  = 0.0000, sci   = 0.0000, lda = 3], class = comp: comp.windows.x
+doc 42: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 6], class = talk: talk.politics.mideast
+doc 43: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 6], class = sci: sci.space
+doc 44: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 3], class = talk: talk.politics.guns
+doc 45: topic = [rec   = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 4], class = comp: comp.windows.x
+doc 46: topic = [talk  = 0.0000, soc   = 0.0000, sci   = 0.0000, lda = 1], class = rec: rec.motorcycles
+doc 47: topic = [talk  = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 6], class = comp: comp.sys.mac.hardware
+doc 48: topic = [talk  = 0.0000, comp  = 0.0000, sci   = 0.0000, lda = 3], class = talk: talk.politics.guns
+doc 49: topic = [talk  = 0.0000, sci   = 0.0000, comp  = 0.0000, lda = 2], class = talk: talk.politics.mideast
+
+network_clusters = 7, lda_clusters = 7, topics = ['alt', 'comp', 'misc', 'rec', 'sci', 'soc', 'talk'], acc1 = 0.28, acc2 = 0.39
+
+Purity
+==============
+lda = 0.3800, word_network = 0.8600
+
+Entropy
+==============
+lda = 1.9613, word_network = 2.1166
+
+Coherence
+==============
+  topic = 0: lda = 0.0000, word_network = 0.0000
+  topic = 1: lda = 0.0000, word_network = 0.0000
+  topic = 2: lda = 0.0000, word_network = 0.0000
+  topic = 3: lda = 0.0000, word_network = 0.0000
+  topic = 4: lda = 0.0000, word_network = 0.0000
+  topic = 5: lda = 0.0000, word_network = 0.0000
+  topic = 6: lda = 0.0000, word_network = 0.0000
+lda = 0.0000, word_network = 0.0000
+
+Perplexity
+==============
+lda = 734.3703, word_network = 6.4043

@@ -1,4 +1,13 @@
-use page rank to get rank of words in word-co-occurence
-    (A^n) * R0 = R where n-> infinity
+1 - value == sum, 50 train, 25 test, no best-best
+2 - value == sum, 100 train, 50 test, no best-best
+3 - value == sum, 150 train, 75 test, no best-best
+4 - value == sum, 200 train, 100 test, no best-best
+5 - value == sum, 250 train, 125 test, no best-best
+6 - value == sum, 300 train, 150 test, no best-best
 
-cluster R
+7 - value == sum, 50 train, 25 test, with best-best
+8 - value == sum, 100 train, 50 test, with best-best
+9 - value == sum, 150 train, 75 test, with best-best
+10 - value == sum, 200 train, 100 test, with best-best
+11 - value == sum, 250 train, 125 test, with best-best
+12 - value == sum, 300 train, 150 test, with best-best

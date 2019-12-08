@@ -2,7 +2,7 @@
 from sklearn.datasets import fetch_20newsgroups
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 from wordnetwork import WordNetwork
-from functions import *
+from utility import *
 
 import os
 import numpy as np
@@ -39,54 +39,68 @@ def runLDA(train_docs, test_docs, number_topics):
 	print("Topics found via LDA:\n===========================")
 	print_topics(lda, count_vectorizer, number_words)
 
-	return lda, lda_vector, CountVectorizer(stop_words='english').fit_transform(test_docs)
+	return lda, lda_vector, count_vectorizer.transform(test_docs)
 
 
 def main():
 	# load wordnet model
 	WN = WordNetwork()
 
-	ntrain = 15
-	ntest = 1 # int(ntrain * 0.1)
+	ntrain = 100
+	ntest = int(ntrain * 0.5)
 	shuffle_state = False
 
-	train_docs = fetch_20newsgroups(
-		subset='train', shuffle=shuffle_state, remove=('headers', 'footers', 'quotes')
-	)
+	train_docs = fetch_20newsgroups(subset='train', shuffle=shuffle_state, remove=('headers', 'footers', 'quotes')	)
 	train_docs, train_docs_target, classes = train_docs.data[:ntrain], train_docs.target[:ntrain], train_docs.target_names
 
-	# test_docs = fetch_20newsgroups(subset='test', shuffle=shuffle_state, remove=('headers', 'footers', 'quotes'))
-	# test_docs, test_docs_target, classes = test_docs.data[:ntest], test_docs.target[:ntest], test_docs.target_names
-	test_docs, test_docs_target, classes = train_docs, train_docs_target, classes
+	test_docs = fetch_20newsgroups(subset='test', shuffle=shuffle_state, remove=('headers', 'footers', 'quotes'))
+	test_docs, test_docs_target, classes = test_docs.data[:ntest], test_docs.target[:ntest], test_docs.target_names
+	# test_docs, test_docs_target, classes = train_docs, train_docs_target, classes
 
 	# redifine classes
 	all_classes = classes.copy()
 	def first(x): return x.split('.')[0]
 	# first = lambda x: x
-	classes = list(set([first(x) for x in classes]))
+	classes = sorted(list(set([first(x) for x in classes])))
 	class_indices = {
 		i: classes.index(first(x)) for i, x in enumerate(all_classes)
 	}
 
+	# the output topic
+	labels = [class_indices[ci] for ci in train_docs_target]
+
 	# the word net model training
-	WN.train(train_docs)
+	WN.train(train_docs, labels)
+
+	# the topics used for modelling
+	all_topics = WN.topic_word_distr.columns
 
 	# the num of topics discovered
-	number_of_topics = len(WN.topic_word_distr.columns)
+	number_of_topics = len(all_topics)
 	
-	# the shape of the confusionmatrix
-	shape = (number_of_topics, len(classes))
-
 	# the lda model
 	lda, lda_vector, test_vector = runLDA(train_docs, test_docs, number_of_topics)
 
 	print('Classification\n=====================================')
+
+	# the network confusion matrix
 	ntd, docs = [], []
-	confusion_matrix = np.zeros(shape)
+	confusion_matrix = pd.DataFrame(
+		data=0.0,
+		columns=all_topics,
+		index=all_topics
+	)
 
 	# lda confusion matrix
 	lda_topic_word_distr = lda.transform(test_vector)
-	lda_confusion_matrix = np.zeros(shape)
+	lda_confusion_matrix = pd.DataFrame(
+		data=0.0,
+		columns=all_topics,
+		index=all_topics
+	)
+
+	# the accuracy
+	acc1 = acc2 = 0
 
 	for doc_i, doc_text in enumerate(test_docs):
 		# the result
@@ -100,18 +114,35 @@ def main():
 		class_ = classes[class_index]
 
 		top_topics = topics.sort_values(ascending=False)[:3]
-		top_topics = (top_topics.index, top_topics.values)
+		top_topics = list(zip(list(top_topics.index), list(top_topics.values)))
 		confusion_matrix[top_topics[0][0]][class_index] += 1
-		lda_confusion_matrix[lda_topic_word_distr[doc_i].argsort()[-1]][class_index] += 1
+
+		if top_topics[0][0] == class_index:
+			acc1 += 1
+			acc2 += 1
+
+		else:
+			if top_topics[1][0] == class_index:
+				acc2 += 0.5
+
+		lda_top_topics = lda_topic_word_distr[doc_i].argsort()[::-1]
+		lda_confusion_matrix[all_topics[lda_top_topics[0]]][class_index] += 1
+
+		topic_info = ", ".join([
+			f"{classes[topic]:5s} = {topic_value:.4f}" for topic, topic_value in top_topics
+		]).strip()
 
 		# show
-		print('doc {}: topic = {}, class = {}: {}'.format(
-			 doc_i, top_topics, class_, actual_class)
-		)
+		print(f'doc {doc_i}: topic = [{topic_info}, lda = {lda_top_topics[0]}], class = {class_}: {actual_class}')
 	print()
 
-	print('network_clusters = {}, lda_clusters = {}, topics = {}\n'.format(
-		len(WN.topic_word_distr.columns), lda_topic_word_distr.shape[1], classes)
+	# calculate test classification accuracy
+	acc1 /= ntest
+	acc2 /= ntest
+
+	print('network_clusters = {}, lda_clusters = {}, topics = {}, acc1 = {}, acc2 = {}\n'.format(
+			len(WN.topic_word_distr.columns), lda_topic_word_distr.shape[1], classes, acc1, acc2
+		)
 	)
 
 	#calculate the lda purity
@@ -125,14 +156,14 @@ def main():
 	# initilaize entropy
 	entropy = lda_entropy = 0
 
-	for topic in WN.topic_word_distr.columns:
+	for topic in all_topics:
 		topic_sum = confusion_matrix[topic].sum()
 		lda_topic_sum = lda_confusion_matrix[topic].sum()
 		
 		lda_H_w = H_w = 0
-		for class_index in range(len(classes)):
+		for class_index in all_topics:
 			x = confusion_matrix[topic][class_index] / topic_sum if topic_sum > 0 else 0
-			lda_x = lda_confusion_matrix[topic][class_index] / lda_topic_sum
+			lda_x = lda_confusion_matrix[topic][class_index] / lda_topic_sum if lda_topic_sum > 0 else 0
 
 			# final entropy for cluster
 			H_w += x * log(x, 2)

@@ -46,10 +46,12 @@ def main():
 	# load wordnet model
 	WN = WordNetwork()
 
-	ntrain = 100
+	ntrain = 300
 	ntest = int(ntrain * 0.5)
+	# ntest = ntrain  # int(ntrain * 0.5)
 	shuffle_state = False
 
+	# retrieve dataset
 	train_docs = fetch_20newsgroups(subset='train', shuffle=shuffle_state, remove=('headers', 'footers', 'quotes')	)
 	train_docs, train_docs_target, classes = train_docs.data[:ntrain], train_docs.target[:ntrain], train_docs.target_names
 
@@ -153,25 +155,12 @@ def main():
 	print(
 		f'Purity\n==============\nlda = {lda_purity:.4f}, word_network = {purity:.4f}\n')
 
-	# initilaize entropy
-	entropy = lda_entropy = 0
+	# calculate entropy
+	x = confusion_matrix.sum(0) / ntest
+	lda_x = lda_confusion_matrix.sum(0) / ntest
 
-	for topic in all_topics:
-		topic_sum = confusion_matrix[topic].sum()
-		lda_topic_sum = lda_confusion_matrix[topic].sum()
-		
-		lda_H_w = H_w = 0
-		for class_index in all_topics:
-			x = confusion_matrix[topic][class_index] / topic_sum if topic_sum > 0 else 0
-			lda_x = lda_confusion_matrix[topic][class_index] / lda_topic_sum if lda_topic_sum > 0 else 0
-
-			# final entropy for cluster
-			H_w += x * log(x, 2)
-			lda_H_w += lda_x * log(lda_x, 2)
-		
-		# entropy
-		entropy += -H_w * (topic_sum / confusion_matrix.size)
-		lda_entropy += -lda_H_w * (lda_topic_sum / lda_confusion_matrix.size)
+	entropy = (-x * x.apply(lambda value: log(value, 2))).sum()
+	lda_entropy = (-lda_x * lda_x.apply(lambda value: log(value, 2))).sum()
 
 	#display the entropy
 	print(f'Entropy\n==============\nlda = {lda_entropy:.4f}, word_network = {entropy:.4f}\n')
@@ -180,7 +169,7 @@ def main():
 	coherence, all_coherences = WN.getCoherence()
 	lda_coherence = 0
 
-	# display the coherence of topics	
+	# display the coherence of topics
 	print(f'Coherence\n==============')
 	for topic, topic_coherence in enumerate(all_coherences):
 		print(f'  topic = {topic}: lda = {lda_coherence:.4f}, word_network = {topic_coherence:.4f}')

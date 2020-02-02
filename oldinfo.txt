@@ -1,3 +1,0 @@
-1 - value > mean + min, 100 train, 50 test, with best-best
-2 - value > mean + min, 100 train, 50 test, with best-best topic
-3 - value > mean + min, 100 train, 50 test, with best-best co-occur

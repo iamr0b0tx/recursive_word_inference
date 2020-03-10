@@ -46,7 +46,7 @@ def main():
 	# load wordnet model
 	WN = WordNetwork()
 
-	ntrain = 300
+	ntrain = 50
 	ntest = int(ntrain * 0.5)
 	# ntest = ntrain  # int(ntrain * 0.5)
 	shuffle_state = False

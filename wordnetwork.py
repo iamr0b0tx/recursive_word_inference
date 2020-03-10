@@ -443,13 +443,13 @@ class WordNetwork:
 		docs_length = int(n * docs_length) if type(n) == float else n
 
 		# ---------------------------------------------preprocessing----------------------------------
-		console_log('-'*50, 'Preprocessing!', '-'*50, '\n')
+		console_log('-'*30, 'Preprocessing!', '-'*30, '\n')
 
 		# constructs a model
 		self.constructDTF(docs, labels)
 
 		# ----------------------------------------training----------------------------------------
-		console_log('='*60, 'Training!', '='*60, '\n')
+		console_log('='*30, 'Training!', '='*30, '\n')
 
 		# iterate and infer
 		self.run_iteration()

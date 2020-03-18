@@ -59,23 +59,20 @@ def main():
 	test_docs, test_docs_target, classes = test_docs.data[:ntest], test_docs.target[:ntest], test_docs.target_names
 	# test_docs, test_docs_target, classes = train_docs, train_docs_target, classes
 
-	# redifine classes
-	all_classes = classes.copy()
-	def first(x): return x.split('.')[0]
-	# first = lambda x: x
-	classes = sorted(list(set([first(x) for x in classes])))
-	class_indices = {
-		i: classes.index(first(x)) for i, x in enumerate(all_classes)
-	}
+	# class modifier
+	def modify_class(var):
+		# return var
+		return var.split('.')[0]
 
 	# the output topic
-	labels = [class_indices[ci] for ci in train_docs_target]
+	train_docs_target = [modify_class(classes[ci]) for ci in train_docs_target]
+	test_docs_target = [modify_class(classes[ci]) for ci in test_docs_target]
 
 	# the word net model training
-	WN.train(train_docs, labels)
+	WN.train(train_docs, train_docs_target)
 
 	# the topics used for modelling
-	all_topics = WN.topic_word_distr.columns
+	all_topics = list(set([modify_class(cl) for cl in classes]))
 
 	# the num of topics discovered
 	number_of_topics = len(all_topics)
@@ -111,9 +108,7 @@ def main():
 		docs.append(words_in_doc)
 
 		# classification
-		actual_class = all_classes[test_docs_target[doc_i]]
-		class_index = class_indices[test_docs_target[doc_i]]
-		class_ = classes[class_index]
+		class_index = test_docs_target[doc_i]
 
 		top_topics = topics.sort_values(ascending=False)[:3]
 		top_topics = list(zip(list(top_topics.index), list(top_topics.values)))
@@ -131,11 +126,11 @@ def main():
 		lda_confusion_matrix[all_topics[lda_top_topics[0]]][class_index] += 1
 
 		topic_info = ", ".join([
-			f"{classes[topic]:5s} = {topic_value:.4f}" for topic, topic_value in top_topics
+			f"{topic:5s} = {topic_value:.4f}" for topic, topic_value in top_topics
 		]).strip()
 
 		# show
-		print(f'doc {doc_i}: topic = [{topic_info}, lda = {lda_top_topics[0]}], class = {class_}: {actual_class}')
+		print(f'doc {doc_i}: topic = [{topic_info}, lda = {lda_top_topics[0]}], class = {class_index}')
 	print()
 
 	# calculate test classification accuracy
@@ -143,7 +138,7 @@ def main():
 	acc2 /= ntest
 
 	print('network_clusters = {}, lda_clusters = {}, topics = {}, acc1 = {}, acc2 = {}\n'.format(
-			len(WN.topic_word_distr.columns), lda_topic_word_distr.shape[1], classes, acc1, acc2
+			len(WN.topic_word_distr.columns), lda_topic_word_distr.shape[1], all_topics, acc1, acc2
 		)
 	)
 

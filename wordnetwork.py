@@ -183,7 +183,7 @@ class WordNetwork:
 		# docs that word belongs
 		word_docs = {}
 
-		console_log('-'*50, 'Building Document Term Matrix!', '-'*50)
+		console_log('-'*25, 'Building Document Term Matrix!', '-'*25)
 
 		# build vocabulary
 		for doc_index in tqdm(range(len(docs))):
@@ -211,7 +211,7 @@ class WordNetwork:
 				word_docs[token].append(doc_index)
 		console_log()
 
-		console_log('-'*50, 'Building Word Occurrence and Co-occurrence!', '-'*50)
+		console_log('-'*25, 'Building Word Occurrence and Co-occurrence!', '-'*25)
 		for token1 in tqdm(word_docs):
 			wd1 = word_docs[token1]
 			if token1 not in term_term_freq:
@@ -302,7 +302,7 @@ class WordNetwork:
 		term_doc_freq = self.doc_term_freq.T
 		term_topic = pd.DataFrame(data=0, columns=term_doc_freq.columns, index=self.doc_topic.index)
 
-		console_log('\n', '-'*50, 'Constructing Topic word distribution!', '-'*50)
+		console_log('\n', '-'*25, 'Constructing Topic word distribution!', '-'*25)
 
 		for word in tqdm(term_doc_freq.columns):
 			tdf = term_doc_freq[word]  # word term_doc_freq
@@ -316,7 +316,7 @@ class WordNetwork:
 		# the general topic word matrix
 		word_topic_matrix = term_topic.copy()
 
-		console_log('\n', '-'*50, 'Checking for informative words!', '-'*50)
+		console_log('\n', '-'*25, 'Checking for informative words!', '-'*25)
 
 		# non informative columns
 		columns_to_drop = []
@@ -348,7 +348,7 @@ class WordNetwork:
 		best_words_indices = []
 		topic_term = term_topic.T
 
-		console_log('\n', '-'*50, 'Trimming for informative words!', '-'*50)
+		console_log('\n', '-'*25, 'Trimming for informative words!', '-'*25)
 
 		for topic in tqdm(term_topic.index):
 			topic_terms = topic_term[topic]
@@ -375,7 +375,7 @@ class WordNetwork:
 			ttr = self.term_term_ratio[best_words_indices] * 0
 
 			# display the current runing process
-			console_log('\n', '-'*50, 'Infering best_word-word ratio!', '-'*50)
+			console_log('\n', '-'*25, 'Infering best_word-word ratio!', '-'*25)
 
 			# infer word for word
 			for w1 in tqdm(best_words_indices):
@@ -405,7 +405,7 @@ class WordNetwork:
 
 			# display the current runing process
 			console_log(
-				'\n', '-'*50, 'Infering word-word ratio!', '-'*50)
+				'\n', '-'*25, 'Infering word-word ratio!', '-'*25)
 
 			# infer word for word
 			for w1 in tqdm(best_words_indices):

@@ -46,7 +46,7 @@ def main():
 	# load wordnet model
 	WN = WordNetwork()
 
-	ntrain = 300
+	ntrain = 30
 	ntest = int(ntrain * 0.5)
 	# ntest = ntrain  # int(ntrain * 0.5)
 	shuffle_state = False
@@ -160,16 +160,16 @@ def main():
 	#display the entropy
 	print(f'Entropy\n==============\nlda = {lda_entropy:.4f}, word_network = {entropy:.4f}\n')
 
-	# get the coherence for the topics
-	coherence, all_coherences = WN.getCoherence()
-	lda_coherence = 0
+	# # get the coherence for the topics
+	# coherence, all_coherences = WN.getCoherence()
+	# lda_coherence = 0
 
-	# display the coherence of topics
-	print(f'Coherence\n==============')
-	for topic, topic_coherence in enumerate(all_coherences):
-		print(f'  topic = {topic}: lda = {lda_coherence:.4f}, word_network = {topic_coherence:.4f}')
+	# # display the coherence of topics
+	# print(f'Coherence\n==============')
+	# for topic, topic_coherence in enumerate(all_coherences):
+	# 	print(f'  topic = {topic}: lda = {lda_coherence:.4f}, word_network = {topic_coherence:.4f}')
 	
-	print(f'lda = {lda_coherence:.4f}, word_network = {coherence:.4f}\n')
+	# print(f'lda = {lda_coherence:.4f}, word_network = {coherence:.4f}\n')
 
 	# nummber of topic to docs
 	ntd = np.array(ntd).T

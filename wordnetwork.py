@@ -281,8 +281,7 @@ class WordNetwork:
 		topwords = []
 		# geting the top words influencing topic
 		for t in topic_word_distr.columns:
-			topic_topwords = topic_word_distr[t].sort_values(ascending=False)[
-				:num]
+			topic_topwords = topic_word_distr[t].sort_values(ascending=False)[:num]
 
 			if verbose:
 				console_log('Topic {}\n{}'.format(t, '='*10))

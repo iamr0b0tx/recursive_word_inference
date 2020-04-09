@@ -49,7 +49,7 @@ The algorithm that describes the program is described below
     ttr = copy(word-word-ratio)
     for w1 in best-words-indices
         for w2 in bast-words-indices
-            factor = mean(topic-word-distr[w1] * topic-word-distr[w1])
+            factor = mean(topic-word-distr[w1] * topic-word-distr[w2])
             if factor <= 0: factor = 1
             ttr[w2] += factor * word-word-ratio[w1] 
     

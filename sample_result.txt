@@ -1,0 +1,182 @@
+------------------------------ Preprocessing! ------------------------------
+
+------------------------- Building Document Term Matrix! -------------------------
+100%|██████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 30/30 [00:00<00:00, 71.43it/s]
+
+------------------------- Building Word Occurrence and Co-occurrence! -------------------------
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2069/2069 [00:12<00:00, 164.90it/s]
+
+       0    1    2    3    4    5    6    7    8    9    10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29
+alt   0.0  0.0  0.0  0.0  1.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+comp  0.0  1.0  0.0  1.0  0.0  1.0  1.0  1.0  0.0  0.0  0.0  0.0  0.0  0.0  1.0  0.0  0.0  1.0  0.0  0.0  1.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  1.0  1.0
+misc  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  1.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  1.0  0.0  0.0  0.0  0.0  0.0
+rec   1.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  1.0  0.0  0.0  1.0  1.0  0.0  0.0  1.0  0.0  1.0  1.0  0.0  0.0  0.0  0.0  1.0  0.0  0.0
+sci   0.0  0.0  1.0  0.0  0.0  0.0  0.0  0.0  1.0  1.0  0.0  1.0  0.0  0.0  0.0  0.0  0.0  0.0  1.0  0.0  0.0  0.0  0.0  1.0  0.0  1.0  1.0  0.0  0.0  0.0
+talk  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  1.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+
+============================== Training! ==============================
+
+
+ ------------------------- Constructing Topic word distribution! -------------------------
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2069/2069 [00:13<00:00, 151.63it/s]
+
+
+ ------------------------- Checking for informative words! -------------------------
+100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2069/2069 [00:05<00:00, 404.48it/s]
+      able  abridged  abstract  abu-mostafa  ac151  academic  accepted  access  ...  z5'wwhjn  z5'wwiz  z5'wwiz*km  z6e1  z6e1t=  z6ei:5'1t  z6ei:6e  z6ei:6ei:6e
+alt    0.0       0.0       0.0          0.0    0.0       0.0       0.0     0.0  ...       0.0      0.0         0.0   0.0     0.0        0.0      0.0          0.0
+comp   0.0       0.0       0.0          0.0    1.0       0.0       0.0     1.0  ...       1.0      1.0         1.0   1.0     1.0        1.0      1.0          1.0
+misc   0.0       0.0       0.0          0.0    0.0       0.0       0.0     0.0  ...       0.0      0.0         0.0   0.0     0.0        0.0      0.0          0.0
+rec    0.0       0.0       0.0          0.0    0.0       0.0       1.0     0.0  ...       0.0      0.0         0.0   0.0     0.0        0.0      0.0          0.0
+sci    1.0       1.0       1.0          1.0    0.0       1.0       0.0     0.0  ...       0.0      0.0         0.0   0.0     0.0        0.0      0.0          0.0
+talk   0.0       0.0       0.0          0.0    0.0       0.0       0.0     0.0  ...       0.0      0.0         0.0   0.0     0.0        0.0      0.0          0.0
+
+[6 rows x 2069 columns]
+
+
+ ------------------------- Trimming for informative words! -------------------------
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 6/6 [00:00<00:00, 60.61it/s]
+
+
+ ------------------------- Infering best_word-word ratio! -------------------------
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [00:27<00:00,  4.95it/s]
+
+ ------------------------- Infering word-word ratio! -------------------------
+100%|████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 100/100 [10:37<00:00,  5.88s/it]
+                         ========================= Topic (word) distribution! =========================
+      able  abridged  abstract  abu-mostafa  ac151  academic  accepted  access  ...  z5'wwhjn  z5'wwiz  z5'wwiz*km  z6e1  z6e1t=  z6ei:5'1t  z6ei:6e  z6ei:6ei:6e
+alt    0.0       0.0       0.0          0.0    0.0       0.0       0.0     0.0  ...       0.0      0.0         0.0   0.0     0.0        0.0      0.0          0.0
+comp   0.0       0.0       0.0          0.0    1.0       0.0       0.0     1.0  ...       1.0      1.0         1.0   1.0     1.0        1.0      1.0          1.0
+misc   0.0       0.0       0.0          0.0    0.0       0.0       0.0     0.0  ...       0.0      0.0         0.0   0.0     0.0        0.0      0.0          0.0
+rec    0.0       0.0       0.0          0.0    0.0       0.0       1.0     0.0  ...       0.0      0.0         0.0   0.0     0.0        0.0      0.0          0.0
+sci    1.0       1.0       1.0          1.0    0.0       1.0       0.0     0.0  ...       0.0      0.0         0.0   0.0     0.0        0.0      0.0          0.0
+talk   0.0       0.0       0.0          0.0    0.0       0.0       0.0     0.0  ...       0.0      0.0         0.0   0.0     0.0        0.0      0.0          0.0
+
+[6 rows x 2069 columns]
+
+Topic alt
+==========
+behaviors          1.0
+wild               1.0
+viewed             1.0
+thousands          1.0
+large              1.0
+animal             1.0
+representatives    1.0
+domesticated       1.0
+animals            1.0
+exhibit            1.0
+Name: alt, dtype: float64
+
+Topic comp
+==========
+z6ei:6ei:6e             1.0
+q6=g9v=g                1.0
+qq,1f9l0qax             1.0
+qq,1f9                  1.0
+qq,1f                   1.0
+qq,0q,3                 1.0
+qax                     1.0
+qas                     1.0
+q6=g9v=g9v=g9v=g9v=g    1.0
+q6=g9v=g9v              1.0
+Name: comp, dtype: float64
+
+Topic misc
+==========
+late        1.0
+match       1.0
+walk        1.0
+walking     1.0
+hmmm        1.0
+kremlin     1.0
+distance    1.0
+built       1.0
+longer      1.0
+station     1.0
+Name: misc, dtype: float64
+
+Topic rec
+==========
+learn       1.0
+injured     1.0
+spot        1.0
+spots       1.0
+needed      1.0
+harkey      1.0
+hartford    1.0
+hates       1.0
+hating      1.0
+started     1.0
+Name: rec, dtype: float64
+
+Topic sci
+==========
+main             1.0
+info             1.0
+information      1.0
+instincts        1.0
+institute        1.0
+institutions     1.0
+integrity        1.0
+intelligence     1.0
+international    1.0
+internet         1.0
+Name: sci, dtype: float64
+
+Topic talk
+==========
+mongols      1.0
+unify        1.0
+land         1.0
+occupying    1.0
+ethos        1.0
+desert       1.0
+painted      1.0
+arabs        1.0
+nomadic      1.0
+author       1.0
+Name: talk, dtype: float64
+
+30 doc(s) read and 2069 word(s) in the vocabulary
+Topics found via LDA:
+===========================
+Topic #0: minutes rational application scsi bus experiments error science fantasy phage
+Topic #1: think video want course best games making efforts adb 950
+Topic #2: truck amp customer told 150 went price like said new
+Topic #3: ax max pl 1d9 b8f wm 3t g9v 0t bxn
+Topic #4: year years think hodapp good pa numbers 300 flashy 3000
+Topic #5: know chip test high speed does help just ethernet lojack
+Topic #6: key proceedings cryptography des encryption pub computer security 1988 ieee
+
+Classification
+=====================================
+doc 0: topic = [sci   = 0.0059, comp  = 0.0046, rec   = 0.0046, lda = 6], class = rec
+doc 1: topic = [comp  = 0.0073, sci   = 0.0069, rec   = 0.0043, lda = 6], class = talk
+doc 2: topic = [sci   = 0.0071, rec   = 0.0011, talk  = 0.0000, lda = 6], class = sci
+doc 3: topic = [sci   = 0.0061, comp  = 0.0041, rec   = 0.0038, lda = 2], class = talk
+doc 4: topic = [talk  = 0.0000, sci   = 0.0000, rec   = 0.0000, lda = 5], class = comp
+doc 5: topic = [sci   = 0.0058, comp  = 0.0053, talk  = 0.0032, lda = 4], class = rec
+doc 6: topic = [sci   = 0.0077, comp  = 0.0058, rec   = 0.0058, lda = 6], class = comp
+doc 7: topic = [comp  = 0.0074, sci   = 0.0058, rec   = 0.0035, lda = 6], class = rec
+doc 8: topic = [rec   = 0.0055, sci   = 0.0053, comp  = 0.0038, lda = 5], class = comp
+doc 9: topic = [sci   = 0.0098, comp  = 0.0070, rec   = 0.0056, lda = 6], class = comp
+doc 10: topic = [sci   = 0.0490, comp  = 0.0407, talk  = 0.0000, lda = 6], class = comp
+doc 11: topic = [sci   = 0.0071, comp  = 0.0044, rec   = 0.0021, lda = 6], class = comp
+doc 12: topic = [talk  = 0.0000, sci   = 0.0000, rec   = 0.0000, lda = 6], class = sci
+doc 13: topic = [comp  = 0.0059, sci   = 0.0052, rec   = 0.0046, lda = 0], class = soc
+doc 14: topic = [comp  = 0.0079, sci   = 0.0047, rec   = 0.0010, lda = 0], class = comp
+
+network_clusters = 6, lda_clusters = 7, topics = ['comp', 'soc', 'misc', 'talk', 'alt', 'sci', 'rec'], acc1 = 0.13333333333333333, acc2 = 0.3
+
+Purity
+==============
+lda = 0.6667, word_network = 0.6000
+
+Entropy
+==============
+lda = 1.7383, word_network = 1.6402
+
+Perplexity
+==============
+lda = 91.9240, word_network = 3.7824
